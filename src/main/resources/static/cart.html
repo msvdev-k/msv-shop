@@ -1,0 +1,40 @@
+<div class="container">
+    <div class="row py-2">
+
+        <div class="row">
+            <div class="col-12">
+                <table class="table table-bordered my-2">
+                    <thead>
+                    <tr>
+                        <th scope="col">Название продукта</th>
+                        <th scope="col">Количество</th>
+                        <th scope="col">Стоимость</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    <tr ng-repeat="item in cart.items" >
+                        <td>{{item.productTitle}}</td>
+                        <td>
+                            <button class="btn btn-light" ng-click="subFromCart(item.productId)"><i class="fa-regular fa-square-minus"></i></button>
+                            {{item.quantity}}
+                            <button class="btn btn-light" ng-click="addToCart(item.productId)"><i class="fa-regular fa-square-plus"></i></button>
+                        </td>
+                        <td>{{item.unitPrice}} x {{item.quantity}} = {{item.price}}</td>
+                        <td><button class="btn btn-danger" ng-click="removeFromCart(item.productId)"><i class="fa-regular fa-trash-can"></i></button></td>
+                    </tr>
+
+                    <tr>
+                        <td>Итого</td>
+                        <td></td>
+                        <td>{{cart.totalPrice}}</td>
+                        <td></td>
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
