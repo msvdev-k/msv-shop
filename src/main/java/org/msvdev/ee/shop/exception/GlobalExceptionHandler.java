@@ -3,6 +3,7 @@ package org.msvdev.ee.shop.exception;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -32,4 +33,16 @@ public class GlobalExceptionHandler {
                 HttpStatus.BAD_REQUEST
         );
     }
+
+
+    @ExceptionHandler
+    public ResponseEntity<AppError> badCredentialsExceptionHandler(BadCredentialsException e) {
+        log.error(e.getMessage(), e);
+
+        return new ResponseEntity<>(
+                new AppError(HttpStatus.UNAUTHORIZED.value(), "Incorrect username or password"),
+                HttpStatus.UNAUTHORIZED
+        );
+    }
+
 }

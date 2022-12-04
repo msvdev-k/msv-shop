@@ -5,6 +5,8 @@ import org.msvdev.ee.shop.dto.Cart;
 import org.msvdev.ee.shop.service.CartService;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 
 @RestController
 @RequestMapping("/api/v1/cart")
@@ -15,8 +17,8 @@ public class CartController {
 
 
     @GetMapping
-    public Cart getCurrentCart() {
-        return cartService.getCurrentCart();
+    public Cart getCurrentCart(Principal principal) {
+        return cartService.getCurrentCart(principal.getName());
     }
 
 
@@ -25,8 +27,8 @@ public class CartController {
      * @param id идентификатор добавляемого товара
      */
     @PutMapping("/add/{id}")
-    public void addToCart(@PathVariable Long id) {
-        cartService.add(id);
+    public void addToCart(Principal principal, @PathVariable Long id) {
+        cartService.add(principal.getName(), id);
     }
 
 
@@ -35,8 +37,8 @@ public class CartController {
      * @param id идентификатор удаляемого товара
      */
     @PutMapping("/sub/{id}")
-    public void subFromCart(@PathVariable Long id) {
-        cartService.sub(id);
+    public void subFromCart(Principal principal, @PathVariable Long id) {
+        cartService.sub(principal.getName(), id);
     }
 
 
@@ -45,8 +47,8 @@ public class CartController {
      * @param id идентификатор удаляемого товара
      */
     @PutMapping("/remove/{id}")
-    public void removeFromCart(@PathVariable Long id) {
-        cartService.remove(id);
+    public void removeFromCart(Principal principal, @PathVariable Long id) {
+        cartService.remove(principal.getName(), id);
     }
 
 
@@ -54,8 +56,8 @@ public class CartController {
      * Очистить корзину
      */
     @DeleteMapping
-    public void clearCart() {
-        cartService.clear();
+    public void clearCart(Principal principal) {
+        cartService.clear(principal.getName());
     }
 
 }

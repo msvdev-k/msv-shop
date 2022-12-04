@@ -7,34 +7,44 @@ import org.msvdev.ee.shop.entity.Product;
 import org.msvdev.ee.shop.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 
 @Service
 @RequiredArgsConstructor
 public class CartService {
 
     private final ProductService productService;
-    private Cart demoCart;
+    private Map<String, Cart> mapCart;
 
 
     @PostConstruct
     public void init() {
-        demoCart = new Cart();
+        mapCart = new HashMap<>();
     }
 
 
     /**
-     * Получить текущую корзину
+     * Получить текущую корзину пользователя
+     * @param username имя пользователя
      */
-    public Cart getCurrentCart() {
-        return demoCart;
+    public Cart getCurrentCart(String username) {
+
+        if (!mapCart.containsKey(username)) {
+            mapCart.put(username, new Cart());
+        }
+
+        return mapCart.get(username);
     }
 
 
     /**
      * Добавить единицу товара в корзину
+     * @param username имя пользователя
      * @param productId идентификатор добавляемого товара
      */
-    public void add(Long productId) {
+    public void add(String username, Long productId) {
         Product product = productService.findById(productId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
@@ -42,15 +52,18 @@ public class CartService {
                                 productId.toString() +
                                 " to cart. Product not found")
                 );
-        demoCart.add(product);
+
+        Cart cart = getCurrentCart(username);
+        cart.add(product);
     }
 
 
     /**
      * Вычесть единицу товара из корзины
+     * @param username имя пользователя
      * @param productId идентификатор убираемого товара
      */
-    public void sub(Long productId) {
+    public void sub(String username, Long productId) {
         Product product = productService.findById(productId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
@@ -58,24 +71,29 @@ public class CartService {
                                 productId.toString() +
                                 " from cart. Product not found")
                 );
-        demoCart.sub(product);
+
+        Cart cart = getCurrentCart(username);
+        cart.sub(product);
     }
 
 
     /**
-     * Удалить товар из корзины
+     * Удалить товар из корзины пользователя
+     * @param username имя пользователя
      * @param productId идентификатор удаляемого товара
      */
-    public void remove(Long productId) {
-        demoCart.remove(productId);
+    public void remove(String username, Long productId) {
+        Cart cart = getCurrentCart(username);
+        cart.remove(productId);
     }
 
 
     /**
-     * Очистить корзину
+     * Очистить корзину пользователя
+     * @param username имя пользователя
      */
-    public void clear() {
-        demoCart.clear();
+    public void clear(String username) {
+        mapCart.remove(username);
     }
 
 }

@@ -1,7 +1,8 @@
-let SpringApp = angular.module('shop', ['ngRoute']);
+let SpringApp = angular.module('shop', ['ngRoute', 'ngStorage']);
 
 const productsContextPath = "http://localhost:8080/shop/api/v1/products"
 const cartContextPath = "http://localhost:8080/shop/api/v1/cart"
+const authContextPath = "http://localhost:8080/shop/auth"
 
 
 SpringApp.config(function ($routeProvider, $locationProvider, $sceProvider) {
@@ -15,6 +16,10 @@ SpringApp.config(function ($routeProvider, $locationProvider, $sceProvider) {
             templateUrl: 'cart.html',
             controller: 'CartController'
         })
+        .when('/login', {
+                    templateUrl: 'login.html',
+                    controller: 'AuthController'
+                })
         .otherwise({
             redirectTo: '/'
         });
@@ -23,7 +28,25 @@ SpringApp.config(function ($routeProvider, $locationProvider, $sceProvider) {
 
 
 
-SpringApp.controller('ProductController', function ($scope, $rootScope, $routeParams, $http) {
+SpringApp.controller('ProductController', function ($scope, $rootScope, $routeParams, $http, $localStorage) {
+
+    if ($localStorage.msvShopUser) {
+
+        try {
+            let jwt = $localStorage.msvShopUser.token;
+            let payload = JSON.parse(atob(jwt.split('.')[1]));
+            let currentTime = parseInt(new Date().getTime() / 1000);
+            if (currentTime > payload.exp) {
+                console.log("Token is expired!!!");
+                delete $localStorage.msvShopUser;
+                $http.defaults.headers.common.Authorization = '';
+            }
+        } catch (e) {
+        }
+
+        $http.defaults.headers.common.Authorization = 'Bearer ' + $localStorage.msvShopUser.token;
+    }
+
 
     $scope.pagination = {
         pageNumber: 1,
@@ -144,5 +167,54 @@ SpringApp.controller('CartController', function ($scope, $rootScope, $routeParam
     };
 
     $scope.loadCartItems();
+
+});
+
+
+
+
+SpringApp.controller('AuthController', function ($scope, $rootScope, $routeParams, $location, $http, $localStorage) {
+
+    $scope.login = function() {
+        $http.post(authContextPath, $scope.user)
+             .then(resp => {
+                               console.log(resp);
+
+                               if (resp.data.token) {
+
+                                    $http.defaults
+                                         .headers
+                                         .common
+                                         .Authorization = 'Bearer ' + resp.data.token;
+
+                                    $localStorage.msvShopUser = {username: $scope.user.username, token: resp.data.token};
+
+                                    $scope.user.username = null;
+                                    $scope.user.password = null;
+
+                                    $location.path('/');
+                               }
+                           },
+                   resp => {
+                               console.error(resp);
+                           });
+    };
+
+
+    $scope.logout = function() {
+        delete $localStorage.msvShopUser;
+        $http.defaults.headers.common.Authorization = '';
+        $scope.user = null;
+        $location.path('/');
+    };
+
+
+    $scope.isLogin = function() {
+        if ($localStorage.msvShopUser) {
+            return true;
+        } else {
+            return false;
+        }
+    };
 
 });
