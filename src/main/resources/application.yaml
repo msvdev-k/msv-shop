@@ -18,6 +18,8 @@ spring:
       enabled: true
       settings:
         web-allow-others: false
+  main:
+    allow-bean-definition-overriding: true
 jwt:
   secret: yhujgugy*&Uhiukjhnd78*&h887d087cd8799*!&@#!#%HNiolk656G&G&^^%67tgiujh0(*Ho8yf56E$E&%^D4532WS#@S%76rf76r5%6fr5r
   lifetime: 360000 # время в миллисекундах
