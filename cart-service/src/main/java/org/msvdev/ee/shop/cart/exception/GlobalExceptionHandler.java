@@ -1,4 +1,4 @@
-package org.msvdev.ee.shop.exception;
+package org.msvdev.ee.shop.cart.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.msvdev.ee.shop.api.exception.AppError;
@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 
-@ControllerAdvice
 @Slf4j
+@ControllerAdvice
 public class GlobalExceptionHandler {
 
 
