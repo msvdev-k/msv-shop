@@ -1,6 +1,6 @@
 package org.msvdev.ee.shop.mapper;
 
-import org.msvdev.ee.shop.dto.ProductDto;
+import org.msvdev.ee.shop.api.ProductDto;
 import org.msvdev.ee.shop.entity.Product;
 import org.springframework.stereotype.Component;
 

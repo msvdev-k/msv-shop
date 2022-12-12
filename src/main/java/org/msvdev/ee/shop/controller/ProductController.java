@@ -1,10 +1,10 @@
 package org.msvdev.ee.shop.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.msvdev.ee.shop.dto.ProductDto;
+import org.msvdev.ee.shop.api.ProductDto;
+import org.msvdev.ee.shop.api.exception.BadRequestException;
+import org.msvdev.ee.shop.api.exception.ResourceNotFoundException;
 import org.msvdev.ee.shop.entity.Product;
-import org.msvdev.ee.shop.exception.BadRequestException;
-import org.msvdev.ee.shop.exception.ResourceNotFoundException;
 import org.msvdev.ee.shop.mapper.ProductMapper;
 import org.msvdev.ee.shop.service.ProductService;
 import org.springframework.data.domain.Page;
@@ -12,8 +12,9 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping("/api/v1/products")
 @RequiredArgsConstructor
+@RequestMapping("/api/v1/products")
+@CrossOrigin(origins = "http://localhost:8080")
 public class ProductController {
 
     private final ProductService productService;
