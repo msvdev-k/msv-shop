@@ -3,14 +3,11 @@ package org.msvdev.ee.shop.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 
-
+@Data
 @Entity
 @Table(name = "roles")
-@Data
-@NoArgsConstructor
 public class Role {
 
     @Id
