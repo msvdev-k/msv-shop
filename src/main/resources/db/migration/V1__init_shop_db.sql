@@ -38,6 +38,22 @@ CREATE TABLE users_roles (
 );
 
 
+-- ------------------------------------------------------------
+-- Список ролей
+-- ------------------------------------------------------------
+INSERT INTO roles(name)
+VALUES
+('ROLE_ADMIN'),
+('ROLE_USER');
+
+-- ------------------------------------------------------------
+-- Пользователь по умолчанию. Username: admin, password: admin
+-- ------------------------------------------------------------
+INSERT INTO users(username, password)
+VALUES ('admin', '$2y$10$tqiwqYVeyWZ69vya0oTUvOTjDyaGNQtRO4w0NvJvw0WZXOSd./FsK');
+
+INSERT INTO users_roles(user_id, role_id)
+VALUES (1, 1);
 
 
 -- ------------------------------------------------------------
