@@ -1,9 +1,9 @@
-package org.msvdev.ee.shop.service;
+package org.msvdev.ee.shop.auth.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.msvdev.ee.shop.entity.User;
-import org.msvdev.ee.shop.repository.UserRepository;
+import org.msvdev.ee.shop.auth.entity.User;
+import org.msvdev.ee.shop.auth.repository.UserRepository;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

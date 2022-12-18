@@ -22,10 +22,9 @@ public class Order {
     private Long id;
 
 
-    @NotNull
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @NotBlank
+    @Column(name = "username")
+    private String username;
 
 
     @NotBlank

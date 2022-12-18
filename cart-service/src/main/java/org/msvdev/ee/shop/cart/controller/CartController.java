@@ -6,13 +6,10 @@ import org.msvdev.ee.shop.cart.mapper.CartMapper;
 import org.msvdev.ee.shop.cart.service.CartService;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
-
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/cart")
-@CrossOrigin(origins = "http://localhost:8080")
 public class CartController {
 
     private final CartService cartService;
@@ -20,8 +17,8 @@ public class CartController {
 
 
     @GetMapping
-    public CartDto getCurrentCart(Principal principal) {
-        return cartMapper.modelToDto(cartService.getCurrentCart(principal.getName()));
+    public CartDto getCurrentCart(@RequestHeader String username, @RequestHeader String[] roles) {
+        return cartMapper.modelToDto(cartService.getCurrentCart(username));
     }
 
 
@@ -30,8 +27,8 @@ public class CartController {
      * @param id идентификатор добавляемого товара
      */
     @PutMapping("/add/{id}")
-    public void addToCart(Principal principal, @PathVariable Long id) {
-        cartService.add(principal.getName(), id);
+    public void addToCart(@RequestHeader String username, @PathVariable Long id) {
+        cartService.add(username, id);
     }
 
 
@@ -40,8 +37,8 @@ public class CartController {
      * @param id идентификатор удаляемого товара
      */
     @PutMapping("/sub/{id}")
-    public void subFromCart(Principal principal, @PathVariable Long id) {
-        cartService.sub(principal.getName(), id);
+    public void subFromCart(@RequestHeader String username, @PathVariable Long id) {
+        cartService.sub(username, id);
     }
 
 
@@ -50,8 +47,8 @@ public class CartController {
      * @param id идентификатор удаляемого товара
      */
     @PutMapping("/remove/{id}")
-    public void removeFromCart(Principal principal, @PathVariable Long id) {
-        cartService.remove(principal.getName(), id);
+    public void removeFromCart(@RequestHeader String username, @PathVariable Long id) {
+        cartService.remove(username, id);
     }
 
 
@@ -59,8 +56,8 @@ public class CartController {
      * Очистить корзину
      */
     @DeleteMapping
-    public void clearCart(Principal principal) {
-        cartService.clear(principal.getName());
+    public void clearCart(@RequestHeader String username) {
+        cartService.clear(username);
     }
 
 }

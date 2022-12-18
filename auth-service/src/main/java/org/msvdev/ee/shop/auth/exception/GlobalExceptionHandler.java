@@ -1,4 +1,4 @@
-package org.msvdev.ee.shop.cart.exception;
+package org.msvdev.ee.shop.auth.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.msvdev.ee.shop.api.exception.AppError;
@@ -6,6 +6,7 @@ import org.msvdev.ee.shop.api.exception.BadRequestException;
 import org.msvdev.ee.shop.api.exception.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -33,6 +34,17 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(
                 new AppError(HttpStatus.BAD_REQUEST.value(), e.getMessage()),
                 HttpStatus.BAD_REQUEST
+        );
+    }
+
+
+    @ExceptionHandler
+    public ResponseEntity<AppError> badCredentialsExceptionHandler(BadCredentialsException e) {
+        log.error(e.getMessage(), e);
+
+        return new ResponseEntity<>(
+                new AppError(HttpStatus.UNAUTHORIZED.value(), "Incorrect username or password"),
+                HttpStatus.UNAUTHORIZED
         );
     }
 

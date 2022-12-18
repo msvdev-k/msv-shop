@@ -1,6 +1,6 @@
-package org.msvdev.ee.shop.repository;
+package org.msvdev.ee.shop.auth.repository;
 
-import org.msvdev.ee.shop.entity.User;
+import org.msvdev.ee.shop.auth.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,4 +1,4 @@
-package org.msvdev.ee.shop.utils;
+package org.msvdev.ee.shop.auth.utils;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -73,16 +73,22 @@ public class JwtTokenUtil {
      * @return список ролей
      */
     public List<String> getRoles(String token) {
-        return getAllClaimsFromToken(token).get("roles", List.class);
+        return (List<String>) getAllClaimsFromToken(token).get("roles");
     }
 
 
-    private Claims getAllClaimsFromToken(String token) {
+    public Claims getAllClaimsFromToken(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+
+    public boolean isInvalid(String token) {
+        return getAllClaimsFromToken(token)
+                .getExpiration().before(new Date());
     }
 
 }

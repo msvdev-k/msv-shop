@@ -1,8 +1,8 @@
-package org.msvdev.ee.shop.service;
+package org.msvdev.ee.shop.auth.service;
 
 import lombok.RequiredArgsConstructor;
-import org.msvdev.ee.shop.entity.Role;
-import org.msvdev.ee.shop.repository.RoleRepository;
+import org.msvdev.ee.shop.auth.entity.Role;
+import org.msvdev.ee.shop.auth.repository.RoleRepository;
 import org.springframework.stereotype.Service;
 
 

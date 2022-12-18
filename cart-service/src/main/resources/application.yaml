@@ -2,7 +2,10 @@ server:
   port: 8081
   servlet:
     context-path: /shop-carts
-jwt:
-  secret: yhujgugy*&Uhiukjhnd78*&h887d087cd8799*!&@#!#%HNiolk656G&G&^^%67tgiujh0(*Ho8yf56E$E&%^D4532WS#@S%76rf76r5%6fr5r
-rest-template:
-  products: http://localhost:8082/shop/api/v1/products
+
+integrations:
+  product-service:
+    url: http://localhost:8082/shop
+    connect-timeout: 5000
+    read-timeout: 10000
+    write-timeout: 5000
