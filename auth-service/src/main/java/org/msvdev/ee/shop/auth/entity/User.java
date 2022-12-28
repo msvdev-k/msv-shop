@@ -1,4 +1,4 @@
-package org.msvdev.ee.shop.entity;
+package org.msvdev.ee.shop.auth.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;

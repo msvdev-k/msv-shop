@@ -1,8 +1,8 @@
 let SpringApp = angular.module('shop', ['ngRoute', 'ngStorage']);
 
-const productsContextPath = "http://localhost:8082/shop/api/v1/products"
-const cartContextPath = "http://localhost:8081/shop-carts/api/v1/cart"
-const authContextPath = "http://localhost:8082/shop/auth"
+const productsContextPath = "http://localhost:8089/shop/api/v1/products"
+const cartContextPath = "http://localhost:8089/cart/api/v1/cart"
+const authContextPath = "http://localhost:8089/auth"
 
 
 SpringApp.config(function ($routeProvider, $locationProvider, $sceProvider) {

@@ -1,4 +1,4 @@
-package org.msvdev.ee.shop.cart.utils;
+package org.msvdev.ee.shop.gateway;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -9,18 +9,19 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
 import java.util.List;
 
 
 @Component
-public class JwtTokenUtil {
+public class JwtTokenParser {
 
     // Ключ для подписи токена
     private final SecretKey key;
 
 
     @Autowired
-    public JwtTokenUtil(@Value("${jwt.secret}") String secret) {
+    public JwtTokenParser(@Value("${jwt.secret}") String secret) {
         this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
@@ -41,16 +42,22 @@ public class JwtTokenUtil {
      * @return список ролей
      */
     public List<String> getRoles(String token) {
-        return getAllClaimsFromToken(token).get("roles", List.class);
+        return (List<String>) getAllClaimsFromToken(token).get("roles");
     }
 
 
-    private Claims getAllClaimsFromToken(String token) {
+    public Claims getAllClaimsFromToken(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+
+    public boolean isInvalid(String token) {
+        return getAllClaimsFromToken(token)
+                .getExpiration().before(new Date());
     }
 
 }

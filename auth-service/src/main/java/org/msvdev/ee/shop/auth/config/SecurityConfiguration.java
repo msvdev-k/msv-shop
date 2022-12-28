@@ -1,11 +1,15 @@
-package org.msvdev.ee.shop.cart.config;
+package org.msvdev.ee.shop.auth.config;
 
+import org.msvdev.ee.shop.auth.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -19,12 +23,14 @@ public class SecurityConfiguration {
     public SecurityFilterChain filterChain(HttpSecurity http, JwtRequestFilter jwtRequestFilter) throws Exception {
         http
                 .csrf().disable()
-                .cors()
-                .and()
+                .cors().disable()
                 .authorizeHttpRequests()
-                .anyRequest().authenticated()
+//                .requestMatchers("/api/v1/orders/**").authenticated()
+                .anyRequest().permitAll()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .headers().frameOptions().disable() // for H2 console
                 .and()
                 .exceptionHandling()
                 .authenticationEntryPoint(
@@ -36,4 +42,18 @@ public class SecurityConfiguration {
         return http.build();
     }
 
+
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+
+    @Bean
+    public AuthenticationProvider authenticationManager(UserService userDetailService) {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userDetailService);
+        provider.setPasswordEncoder(passwordEncoder());
+        return provider;
+    }
 }

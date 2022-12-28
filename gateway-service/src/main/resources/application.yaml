@@ -1,0 +1,67 @@
+server:
+  port: 8089
+
+spring:
+  application:
+    name: gateway-service
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "http://localhost:8080"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - PATCH
+              - DELETE
+            allowedHeaders: "*"
+      routes:
+        - id: core-service
+          uri: "http://localhost:8082"
+          predicates:
+            - Path=/shop/**
+          filters:
+            - StripPrefix=1
+            - PrefixPath=/shop
+            - JwtAuthFilterFactory
+
+        # http://localhost:8089/shop/**
+        # -->
+        # http://localhost:8082/shop/**
+
+        - id: cart-service
+          uri: "http://localhost:8081"
+          predicates:
+            - Path=/cart/**
+          filters:
+            - StripPrefix=1
+            - PrefixPath=/shop-carts
+            - JwtAuthFilterFactory
+
+        # http://localhost:8089/cart/**
+        # -->
+        # http://localhost:8081/shop-carts/**
+
+        - id: auth-service
+          uri: "http://localhost:8085"
+          predicates:
+            - Path=/auth/**
+          filters:
+            - StripPrefix=1
+            - PrefixPath=/auth-service/auth
+            - JwtAuthFilterFactory
+
+        # http://localhost:8089/auth/**
+        # -->
+        # http://localhost:8085/auth-service/auth/**
+
+
+#logging:
+#  level:
+#    org.springframework.cloud.gateway: DEBUG
+#    reactor.netty.http.client: DEBUG
+
+jwt:
+  secret: yhujgugy*&Uhiukjhnd78*&h887d087cd8799*!&@#!#%HNiolk656G&G&^^%67tgiujh0(*Ho8yf56E$E&%^D4532WS#@S%76rf76r5%6fr5r

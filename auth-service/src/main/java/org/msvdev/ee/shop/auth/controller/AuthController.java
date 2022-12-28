@@ -1,10 +1,10 @@
-package org.msvdev.ee.shop.controller;
+package org.msvdev.ee.shop.auth.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.msvdev.ee.shop.api.jwt.JwtRequest;
 import org.msvdev.ee.shop.api.jwt.JwtResponse;
-import org.msvdev.ee.shop.service.UserService;
-import org.msvdev.ee.shop.utils.JwtTokenUtil;
+import org.msvdev.ee.shop.auth.service.UserService;
+import org.msvdev.ee.shop.auth.utils.JwtTokenUtil;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,8 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/auth")
-@CrossOrigin(origins = "http://localhost:8080")
+@RequestMapping("/auth/")
 public class AuthController {
 
     private final UserService userService;
