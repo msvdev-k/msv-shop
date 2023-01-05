@@ -1,15 +1,12 @@
 package org.msvdev.ee.shop.cart.service;
 
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.msvdev.ee.shop.api.ProductDto;
 import org.msvdev.ee.shop.api.exception.ResourceNotFoundException;
-import org.msvdev.ee.shop.cart.model.Cart;
 import org.msvdev.ee.shop.cart.integration.ProductServiceIntegration;
+import org.msvdev.ee.shop.cart.model.Cart;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-
-import java.util.HashMap;
-import java.util.Map;
 
 
 @Service
@@ -17,13 +14,7 @@ import java.util.Map;
 public class CartService {
 
     private final ProductServiceIntegration productServiceIntegration;
-    private Map<String, Cart> mapCart;
-
-
-    @PostConstruct
-    public void init() {
-        mapCart = new HashMap<>();
-    }
+    private final RedisTemplate<String, Cart> redisTemplate;
 
 
     /**
@@ -32,11 +23,11 @@ public class CartService {
      */
     public Cart getCurrentCart(String username) {
 
-        if (!mapCart.containsKey(username)) {
-            mapCart.put(username, new Cart());
+        if (Boolean.FALSE.equals(redisTemplate.hasKey(username))) {
+            redisTemplate.opsForValue().set(username, new Cart());
         }
 
-        return mapCart.get(username);
+        return redisTemplate.opsForValue().get(username);
     }
 
 
@@ -56,6 +47,7 @@ public class CartService {
 
         Cart cart = getCurrentCart(username);
         cart.add(product);
+        redisTemplate.opsForValue().set(username, cart);
     }
 
 
@@ -75,6 +67,7 @@ public class CartService {
 
         Cart cart = getCurrentCart(username);
         cart.sub(product);
+        redisTemplate.opsForValue().set(username, cart);
     }
 
 
@@ -86,6 +79,7 @@ public class CartService {
     public void remove(String username, Long productId) {
         Cart cart = getCurrentCart(username);
         cart.remove(productId);
+        redisTemplate.opsForValue().set(username, cart);
     }
 
 
@@ -94,7 +88,26 @@ public class CartService {
      * @param username имя пользователя
      */
     public void clear(String username) {
-        mapCart.remove(username);
+        redisTemplate.delete(username);
     }
 
+
+    /**
+     * Объединение двух корзин с товарами
+     * @param username имя пользователя (общая корзина)
+     * @param guestCartId идентификатор гостевой корзины
+     */
+    public void mergeCarts(String username, String guestCartId) {
+        if (Boolean.TRUE.equals(redisTemplate.hasKey(guestCartId))) {
+
+            Cart guestCart = redisTemplate.opsForValue().get(guestCartId);
+            redisTemplate.delete(guestCartId);
+            if (guestCart == null) return;
+
+            Cart cart = getCurrentCart(username);
+            cart.merge(guestCart);
+
+            redisTemplate.opsForValue().set(username, cart);
+        }
+    }
 }

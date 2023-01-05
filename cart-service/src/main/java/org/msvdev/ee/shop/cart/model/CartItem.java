@@ -1,18 +1,21 @@
 package org.msvdev.ee.shop.cart.model;
 
-import lombok.Getter;
+import lombok.Data;
 
 import java.math.BigDecimal;
 
 
-@Getter
+@Data
 public class CartItem {
 
-    private final Long productId;
-    private final String productTitle;
+    private Long productId;
+    private String productTitle;
     private int quantity;
-    private final BigDecimal unitPrice;
-    private BigDecimal price;
+    private BigDecimal unitPrice;
+
+
+    public CartItem() {
+    }
 
 
     public CartItem(Long productId, String productTitle, BigDecimal unitPrice) {
@@ -20,7 +23,6 @@ public class CartItem {
         this.productTitle = productTitle;
         this.quantity = 1;
         this.unitPrice = unitPrice;
-        calculatePrice();
     }
 
 
@@ -33,14 +35,13 @@ public class CartItem {
         if (quantity < 0) {
             quantity = 0;
         }
-        calculatePrice();
     }
 
 
     /**
      * Подсчитать полную стоимость товара в одной позиции
      */
-    private void calculatePrice() {
-        price = unitPrice.multiply(new BigDecimal(quantity));
+    public BigDecimal cartItemPrice() {
+        return unitPrice.multiply(new BigDecimal(quantity));
     }
 }

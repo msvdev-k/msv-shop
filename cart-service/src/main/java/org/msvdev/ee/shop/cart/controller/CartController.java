@@ -4,7 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.msvdev.ee.shop.api.cart.CartDto;
 import org.msvdev.ee.shop.cart.mapper.CartMapper;
 import org.msvdev.ee.shop.cart.service.CartService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 
 @RestController
@@ -16,9 +19,29 @@ public class CartController {
     private final CartMapper cartMapper;
 
 
-    @GetMapping
-    public CartDto getCurrentCart(@RequestHeader String username, @RequestHeader String[] roles) {
-        return cartMapper.modelToDto(cartService.getCurrentCart(username));
+    /**
+     * Получить идентификатор гостевой корзины
+     */
+    @GetMapping("/guest_cart_id")
+    public ResponseEntity<String> getGuestCartId() {
+        return ResponseEntity.ok(UUID.randomUUID().toString());
+    }
+
+
+    /**
+     * Получить текущую корзину
+     */
+    @GetMapping("/{guestCartId}")
+    public CartDto getCurrentCart(@RequestHeader(required = false) String username,
+                                  @PathVariable String guestCartId) {
+        String currentCartID = guestCartId;
+
+        if (username != null) {
+            cartService.mergeCarts(username, guestCartId);
+            currentCartID = username;
+        }
+
+        return cartMapper.modelToDto(cartService.getCurrentCart(currentCartID));
     }
 
 
@@ -26,9 +49,12 @@ public class CartController {
      * Добавить единицу товара в корзину
      * @param id идентификатор добавляемого товара
      */
-    @PutMapping("/add/{id}")
-    public void addToCart(@RequestHeader String username, @PathVariable Long id) {
-        cartService.add(username, id);
+    @PutMapping("/{guestCartId}/add/{id}")
+    public void addToCart(@RequestHeader(required = false) String username,
+                          @PathVariable String guestCartId,
+                          @PathVariable Long id) {
+        String currentCartID = username != null ? username : guestCartId;
+        cartService.add(currentCartID, id);
     }
 
 
@@ -36,9 +62,12 @@ public class CartController {
      * Удалить единицу товара из корзины
      * @param id идентификатор удаляемого товара
      */
-    @PutMapping("/sub/{id}")
-    public void subFromCart(@RequestHeader String username, @PathVariable Long id) {
-        cartService.sub(username, id);
+    @PutMapping("/{guestCartId}/sub/{id}")
+    public void subFromCart(@RequestHeader(required = false) String username,
+                            @PathVariable String guestCartId,
+                            @PathVariable Long id) {
+        String currentCartID = username != null ? username : guestCartId;
+        cartService.sub(currentCartID, id);
     }
 
 
@@ -46,18 +75,23 @@ public class CartController {
      * Удалить товар полностью из корзины
      * @param id идентификатор удаляемого товара
      */
-    @PutMapping("/remove/{id}")
-    public void removeFromCart(@RequestHeader String username, @PathVariable Long id) {
-        cartService.remove(username, id);
+    @PutMapping("/{guestCartId}/remove/{id}")
+    public void removeFromCart(@RequestHeader(required = false) String username,
+                               @PathVariable String guestCartId,
+                               @PathVariable Long id) {
+        String currentCartID = username != null ? username : guestCartId;
+        cartService.remove(currentCartID, id);
     }
 
 
     /**
      * Очистить корзину
      */
-    @DeleteMapping
-    public void clearCart(@RequestHeader String username) {
-        cartService.clear(username);
+    @DeleteMapping("/{guestCartId}")
+    public void clearCart(@RequestHeader(required = false) String username,
+                          @PathVariable String guestCartId) {
+        String currentCartID = username != null ? username : guestCartId;
+        cartService.clear(currentCartID);
     }
 
 }

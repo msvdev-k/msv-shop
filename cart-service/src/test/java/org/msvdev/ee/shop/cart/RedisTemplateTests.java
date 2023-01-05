@@ -3,38 +3,31 @@ package org.msvdev.ee.shop.cart;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
 import org.msvdev.ee.shop.api.ProductDto;
-import org.msvdev.ee.shop.api.exception.ResourceNotFoundException;
-import org.msvdev.ee.shop.cart.integration.ProductServiceIntegration;
 import org.msvdev.ee.shop.cart.model.Cart;
-import org.msvdev.ee.shop.cart.service.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.redis.core.RedisTemplate;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 
 
 @SpringBootTest
-public class CartServiceTests {
+public class RedisTemplateTests {
 
     @Autowired
-    private CartService cartService;
+    private RedisTemplate<String, Cart> redisTemplate;
 
-    @MockBean
-    private ProductServiceIntegration productServiceIntegration;
 
     private String username;
+    private ProductDto[] products;
 
 
     @BeforeEach
     public void init() {
         username = "user";
 
-        ProductDto[] products = new ProductDto[]{
+        products = new ProductDto[]{
                 new ProductDto(0L, "Картофель", null, new BigDecimal(55)),
                 new ProductDto(1L, "Помидоры", null, new BigDecimal(180)),
                 new ProductDto(2L, "Морковь", null, new BigDecimal(60)),
@@ -57,77 +50,96 @@ public class CartServiceTests {
                 new ProductDto(19L, "Изюм", null, new BigDecimal(210))
         };
 
-        for (ProductDto product : products) {
-            Mockito.doReturn(Optional.of(product))
-                    .when(productServiceIntegration)
-                    .findById(product.getId());
-        }
     }
 
 
     @Test
-    public void addSubRemoveProductTest() {
-        cartService.clear(username);
-        Cart cart = cartService.getCurrentCart(username);
+    public void addSubRemoveClearProductTest() {
+        redisTemplate.opsForValue().set(username, new Cart());
+
+        Cart cart = redisTemplate.opsForValue().get(username);
 
         Assertions.assertNotNull(cart);
         Assertions.assertEquals(cart.getItems().size(), 0);
         Assertions.assertEquals(cart.getTotalPrice(), BigDecimal.ZERO);
 
-        cartService.add(username, 0L);
-        cartService.add(username, 1L);
-        cartService.add(username, 1L);
-        cartService.add(username, 2L);
-        cartService.add(username, 5L);
-        cartService.add(username, 5L);
-        cartService.add(username, 5L);
+        /////////////////////////////////////////////////////////////////
+        cart.add(products[0]);
+        cart.add(products[1]);
+        cart.add(products[1]);
+        cart.add(products[2]);
+        cart.add(products[5]);
+        cart.add(products[5]);
+        cart.add(products[5]);
 
-        Mockito.verify(productServiceIntegration, Mockito.times(7))
-                .findById(ArgumentMatchers.any());
+        redisTemplate.opsForValue().set(username, cart);
 
-        cart = cartService.getCurrentCart(username);
+
+        cart = redisTemplate.opsForValue().get(username);
+
+        Assertions.assertNotNull(cart);
         Assertions.assertEquals(cart.getItems().size(), 4);
         Assertions.assertEquals(cart.getTotalPrice(), new BigDecimal(55+2*180+60+3*240));
 
-        cartService.sub(username, 2L);
-        cartService.sub(username, 5L);
 
-        Mockito.verify(productServiceIntegration, Mockito.times(9))
-                .findById(ArgumentMatchers.any());
+        /////////////////////////////////////////////////////////////////
+        cart.sub(products[2]);
+        cart.sub(products[5]);
 
-        cart = cartService.getCurrentCart(username);
+        redisTemplate.opsForValue().set(username, cart);
+
+
+        cart = redisTemplate.opsForValue().get(username);
+
+        Assertions.assertNotNull(cart);
         Assertions.assertEquals(cart.getItems().size(), 4);
         Assertions.assertEquals(cart.getTotalPrice(), new BigDecimal(55+2*180+2*240));
 
-        cartService.remove(username, 2L);
-        cartService.remove(username, 20L);
 
-        Mockito.verify(productServiceIntegration, Mockito.times(9))
-                .findById(ArgumentMatchers.any());
+        /////////////////////////////////////////////////////////////////
+        cart.remove(2L);
+        cart.remove(20L);
 
-        cart = cartService.getCurrentCart(username);
+        redisTemplate.opsForValue().set(username, cart);
+
+
+        cart = redisTemplate.opsForValue().get(username);
+
+        Assertions.assertNotNull(cart);
         Assertions.assertEquals(cart.getItems().size(), 3);
         Assertions.assertEquals(cart.getTotalPrice(), new BigDecimal(55+2*180+2*240));
 
-        cartService.remove(username, 5L);
 
-        Mockito.verify(productServiceIntegration, Mockito.times(9))
-                .findById(ArgumentMatchers.any());
+        /////////////////////////////////////////////////////////////////
+        cart.remove(5L);
 
-        cart = cartService.getCurrentCart(username);
+        redisTemplate.opsForValue().set(username, cart);
+
+
+        cart = redisTemplate.opsForValue().get(username);
+
+        Assertions.assertNotNull(cart);
         Assertions.assertEquals(cart.getItems().size(), 2);
         Assertions.assertEquals(cart.getTotalPrice(), new BigDecimal(55+2*180));
-    }
 
 
-    @Test
-    public void productNotFoundExceptionTest() {
-        Assertions.assertThrows(ResourceNotFoundException.class, () -> {
-            cartService.add(username, 30L);
-        });
+        /////////////////////////////////////////////////////////////////
+        cart.clear();
 
-        Assertions.assertThrows(ResourceNotFoundException.class, () -> {
-            cartService.sub(username, 55L);
-        });
+        redisTemplate.opsForValue().set(username, cart);
+
+
+        cart = redisTemplate.opsForValue().get(username);
+
+        Assertions.assertNotNull(cart);
+        Assertions.assertEquals(cart.getItems().size(), 0);
+        Assertions.assertEquals(cart.getTotalPrice(), BigDecimal.ZERO);
+
+
+        /////////////////////////////////////////////////////////////////
+        redisTemplate.delete(username);
+
+        cart = redisTemplate.opsForValue().get(username);
+        Assertions.assertNull(cart);
     }
 }

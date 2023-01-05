@@ -1,6 +1,5 @@
 package org.msvdev.ee.shop.cart.model;
 
-import lombok.Getter;
 import org.msvdev.ee.shop.api.ProductDto;
 
 import java.math.BigDecimal;
@@ -9,7 +8,6 @@ import java.util.Collections;
 import java.util.List;
 
 
-@Getter
 public class Cart {
 
     private final List<CartItem> items;
@@ -27,6 +25,25 @@ public class Cart {
      */
     public List<CartItem> getItems() {
         return Collections.unmodifiableList(items);
+    }
+
+
+    /**
+     * Сохранить список позиций в корзине
+     */
+    public void setItems(List<CartItem> items) {
+        this.items.clear();
+        this.items.addAll(items);
+        calculateTotalPrice();
+    }
+
+
+    public BigDecimal getTotalPrice() {
+        return totalPrice;
+    }
+
+
+    public void setTotalPrice(BigDecimal totalPrice) {
     }
 
 
@@ -88,8 +105,33 @@ public class Cart {
     private void calculateTotalPrice() {
         totalPrice = BigDecimal.ZERO;
         for (CartItem item: items) {
-            totalPrice = totalPrice.add(item.getPrice());
+            totalPrice = totalPrice.add(item.cartItemPrice());
         }
     }
 
+
+    /**
+     * Объединение текущей корзины с гостевой
+     * @param guestCart гостевая корзина
+     */
+    public void merge(Cart guestCart) {
+        guestCart.getItems().forEach(guestCartItem ->{
+
+            boolean flag = true;
+
+            for (CartItem item: items) {
+                if (item.getProductId().equals(guestCartItem.getProductId())) {
+                    item.changeQuantity(guestCartItem.getQuantity());
+                    flag = false;
+                    break;
+                }
+            }
+
+            if (flag) {
+                items.add(guestCartItem);
+            }
+        });
+
+        calculateTotalPrice();
+    }
 }

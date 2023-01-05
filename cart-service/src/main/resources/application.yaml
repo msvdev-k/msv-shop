@@ -3,6 +3,11 @@ server:
   servlet:
     context-path: /shop-carts
 
+spring:
+  redis:
+    host: 192.168.0.4
+    port: 6379
+
 integrations:
   product-service:
     url: http://localhost:8082/shop
