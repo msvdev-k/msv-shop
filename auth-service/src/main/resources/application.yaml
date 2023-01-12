@@ -1,0 +1,23 @@
+server:
+  port: 8085
+  servlet:
+    context-path: /auth-service
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:shop-auth;Mode=PostgreSQL
+    username: sa
+    password:
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+  h2:
+    console:
+      enabled: true
+      settings:
+        web-allow-others: false
+jwt:
+  secret: yhujgugy*&Uhiukjhnd78*&h887d087cd8799*!&@#!#%HNiolk656G&G&^^%67tgiujh0(*Ho8yf56E$E&%^D4532WS#@S%76rf76r5%6fr5r
+  lifetime: 3600000 # время в миллисекундах
