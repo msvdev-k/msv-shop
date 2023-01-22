@@ -11,15 +11,15 @@ import org.springframework.stereotype.Component;
 public class CartMapper {
 
     public CartItemDto modelToDto(CartItem cartItem) {
-        CartItemDto cartItemDto = new CartItemDto();
 
-        cartItemDto.setProductId(cartItem.getProductId());
-        cartItemDto.setProductTitle(cartItem.getProductTitle());
-        cartItemDto.setQuantity(cartItem.getQuantity());
-        cartItemDto.setUnitPrice(cartItem.getUnitPrice());
-        cartItemDto.setPrice(cartItem.cartItemPrice());
-
-        return cartItemDto;
+        return CartItemDto
+                .builder()
+                .productId(cartItem.getProductId())
+                .productTitle(cartItem.getProductTitle())
+                .quantity(cartItem.getQuantity())
+                .unitPrice(cartItem.getUnitPrice())
+                .price(cartItem.cartItemPrice())
+                .build();
     }
 
 
