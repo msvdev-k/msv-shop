@@ -3,7 +3,7 @@ package org.msvdev.ee.shop.cart.service;
 import lombok.RequiredArgsConstructor;
 import org.msvdev.ee.shop.api.ProductDto;
 import org.msvdev.ee.shop.api.exception.ResourceNotFoundException;
-import org.msvdev.ee.shop.cart.integration.ProductServiceIntegration;
+import org.msvdev.ee.shop.cart.integration.ProxyProductServiceIntegration;
 import org.msvdev.ee.shop.cart.model.Cart;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CartService {
 
-    private final ProductServiceIntegration productServiceIntegration;
+    private final ProxyProductServiceIntegration productServiceIntegration;
     private final RedisTemplate<String, Cart> redisTemplate;
 
 
