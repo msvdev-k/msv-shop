@@ -12,13 +12,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProfilingLoggingAspect {
 
+    private final long MICRO_IN_NANO_TIMES = 1000L;
 
     @Around("execution(public * org.msvdev.ee.shop.controller.*.*(..))")
     public Object controllerProfiling(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
 
         long startTime = System.nanoTime();
         Object out = proceedingJoinPoint.proceed();
-        long duration = (System.nanoTime() - startTime) / 1000;
+        long duration = (System.nanoTime() - startTime) / MICRO_IN_NANO_TIMES;
 
         log.info(String.format("%s duration: %d us", proceedingJoinPoint.getSignature(), duration));
 
